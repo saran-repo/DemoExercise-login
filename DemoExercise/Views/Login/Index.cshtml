@@ -1,0 +1,79 @@
+﻿@using Microsoft.AspNetCore.Http;
+@model DemoExercise.Models.Login
+@{
+    ViewData["Title"] = "Login";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Login</h2>
+<div class="form-horizontal">
+    <hr />
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.UserName, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.UserName, new { htmlAttributes = new { @class = "form-control", @id = "idUserName" } })
+            @Html.ValidationMessageFor(model => model.UserName, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Password, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.PasswordFor(model => model.Password, new { @id = "idUserPassword", @class = "form-control col-xs-2" })
+            @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input id="btnSubmitLogin" type="button" value="Login" class="btn btn-primary" />
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <label id="lblResult" class="form-check-label"></label>
+        </div>
+    </div>
+</div>
+
+<div>
+    @Html.ActionLink("Back to Home", "Index", "Home")
+</div>
+<script type="text/javascript">
+    jQuery.noConflict();
+    jQuery("#btnSubmitLogin").click(function ()
+    {
+        var uName = jQuery("#idUserName").val();
+        var uPassword = jQuery("#idUserPassword").val();
+        jQuery("#lblResult").html("").show();
+
+        jQuery.ajax({
+            type: "POST",
+            url: '/Login/CheckLogin/',
+            data: { username: uName, password: uPassword },
+            dataType: "json",
+            success: function (data) {
+                    if (data.success) {
+                        jQuery("#lblResult").html("<span style='color:white;display:block;background:green; padding:5px 10px; margin:2px'>Login Successful</span>");
+                        redirectToHome();
+                    }
+                    else {
+                        jQuery("#lblResult").html("<span style='color:white;display:block;background:red; padding:5px 10px; margin:2px; border:1px solid #ddd'>Login Unsuccessful</span>");
+                        jQuery('#lblResult').delay(2000).fadeOut('slow');
+                        }
+                },
+            error: function () {
+                jQuery("#lblResult").html("<span style='color:white;display:block;background:red; padding:5px 10px; margin:2px; border:1px solid #ddd'>Error occured while validating</span>");
+            }
+        });
+        //jQuery('#lblResult').delay(1000).fadeOut('slow');
+    });
+
+    function redirectToHome() {
+        window.location.href = "/Home/Index";
+    }
+</script>
+
+

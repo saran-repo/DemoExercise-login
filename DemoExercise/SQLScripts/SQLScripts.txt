@@ -1,0 +1,99 @@
+﻿Create database demoExampleDB
+
+USE [demoExampleDB]
+GO
+
+/****** Object:  Table [dbo].[tblCredentials]    Script Date: 11/21/2020 7:29:17 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[tblCredentials](
+	[UserID] [int] IDENTITY(1,1) NOT NULL,
+	[UserName] [nvarchar](50) NOT NULL,
+	[Password] [nvarchar](50) NOT NULL
+) ON [PRIMARY]
+GO
+
+
+GO
+--//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/****** Object:  Table [dbo].[tblErrorLog]    Script Date: 11/21/2020 7:30:53 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[tblErrorLog](
+	[ErrorId] [bigint] IDENTITY(1,1) NOT NULL,
+	[Error] [nvarchar](250) NOT NULL,
+	[ExceptionLog] [nvarchar](max) NULL,
+	[CreatedBy] [nvarchar](25) NULL,
+	[CreatedDate] [datetime] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[ErrorId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+--//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+USE [demoExampleDB]
+GO
+
+/****** Object:  StoredProcedure [dbo].[uspCheckIfUserExists]    Script Date: 11/21/2020 7:31:57 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[uspCheckIfUserExists] 
+( 
+@username nvarchar(50),
+@password nvarchar(50)
+)
+AS
+
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    -- Insert statements for procedure here
+	Select 1 as Result from tblCredentials
+	where UserName = @username and Password = @password;
+END
+GO
+
+
+--//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+USE [demoExampleDB]
+GO
+
+/****** Object:  StoredProcedure [dbo].[uspLogErrorMsg]    Script Date: 11/21/2020 7:32:19 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+CREATE PROCEDURE [dbo].[uspLogErrorMsg] 
+( 
+@Error nvarchar(250),
+@ExceptionLog nvarchar(max) = null,
+@CreatedBy nvarchar(50)
+)
+AS
+
+BEGIN
+
+
+INSERT INTO tblErrorLog (Error, ExceptionLog, CreatedBy, CreatedDate) values (@Error, @ExceptionLog, @CreatedBy, GETDATE());
+END
+GO
